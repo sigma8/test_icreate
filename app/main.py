@@ -1,12 +1,26 @@
 from fastapi import FastAPI
-from . import models, database
+from fastapi.middleware.cors import CORSMiddleware
+from app.core.config import settings
 
 
+def get_application():
+    from .router import router
 
-models.Base.metadata.create_all(bind=database.engine)
+    _app = FastAPI(title=settings.PROJECT_NAME)
 
-app = FastAPI()
+    _app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[
+            str(origin) for origin in settings.BACKEND_CORS_ORIGINS
+        ],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
-@app.get("/")
-def root():
-    return {"message": "bienvenido a mi api"}
+    _app.include_router(router, prefix="")
+
+    return _app
+
+
+app = get_application()

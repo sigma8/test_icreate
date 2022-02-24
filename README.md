@@ -36,6 +36,11 @@ POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 POSTGRES_SERVER=database
 POSTGRES_DB=app
+#-----Agregado jtortolero-----
+SECRET_KEY = "Your key"
+ALGORITHM = HS256
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+#-----------------------------
 ```
 
 ## License

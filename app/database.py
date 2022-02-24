@@ -1,22 +1,27 @@
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.declarative import as_declarative, declared_attr
 from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
+from typing import Generator
 
 
-SQLALCHEMY_DATABASE_URL = f'postgresql://{settings.DB_USERNAME}:{settings.DB_PASSWORD}@{settings.DB_HOSTNAME}:{settings.DB_PORT}/{settings.DB_NAME}'
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
-
+engine = create_engine(settings.DATABASE_URI, pool_pre_ping=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-Base = declarative_base()
+@as_declarative()
+class Base:
+    @declared_attr
+    def __tablename__(cls) -> str:
+        return cls.__name__.lower()
 
 
-def get_db():
-    db = SessionLocal()
-    print("session")
+#-----Agregado jtortolero-----
+
+def get_db() -> Generator:
     try:
+        db = SessionLocal()
         yield db
     finally:
         db.close()
+#-----------------------------
